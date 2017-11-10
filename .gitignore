@@ -1,0 +1,14 @@
+# Generated Vagrant boxes
+*.box
+**/.vagrant/
+
+# Interim data for box generation
+output-*/*
+
+# ISO cache
+packer_cache/*
+
+
+# IntelliJ
+*.iml
+**/.idea

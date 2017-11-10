@@ -1,0 +1,74 @@
+{
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "vboxmanage": [
+        [ "modifyvm", "{{.Name}}", "--memory", "2048" ],
+        [ "modifyvm", "{{.Name}}", "--vram", "16" ],
+        [ "modifyvm", "{{.Name}}", "--cpus", "2" ]
+      ],
+      "guest_additions_mode": "{{ user `guest_additions_mode` }}",
+      "guest_os_type": "Windows2012_64",
+      "headless": "{{ user `headless` }}",
+      "iso_url": "{{ user `iso_url` }}",
+      "iso_checksum": "{{ user `iso_checksum` }}",
+      "iso_checksum_type": "md5",
+      "communicator": "winrm",
+      "winrm_username": "vagrant",
+      "winrm_password": "vagrant",
+      "winrm_timeout": "12h",
+      "shutdown_command": "A:/packer-shutdown.bat",
+      "shutdown_timeout": "15m",
+      "floppy_files": [
+        "installer/autounattend.xml",
+        "scripts/winrm.ps1",
+        "installer/packer-shutdown.bat",
+        "installer/postinstall.xml" 
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "powershell",
+      "script": "scripts/configure-features.ps1",
+      "elevated_user": "vagrant",
+      "elevated_password": "vagrant"
+    },
+    {
+      "type": "powershell",
+      "script": "scripts/windows-updates.ps1",
+      "elevated_user": "vagrant",
+      "elevated_password": "vagrant"
+    },
+    {
+      "type": "windows-restart",
+      "restart_timeout": "15m"
+    },
+    {
+      "type": "powershell",
+      "script": "scripts/after-reboot.ps1",
+      "elevated_user": "vagrant",
+      "elevated_password": "vagrant"
+    },
+    {
+      "type": "powershell",
+      "script": "scripts/cleanup.ps1",
+      "elevated_user": "vagrant",
+      "elevated_password": "vagrant"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "keep_input_artifact": true,
+      "output": "windows2016min-{{.Provider}}.box",
+      "vagrantfile_template": "vagrantfile-windows.template"
+    }
+  ],
+  "variables": {
+    "guest_additions_mode": "attach",
+    "headless": "true",
+    "iso_checksum": "18a4f00a675b0338f3c7c93c4f131beb",
+    "iso_url": "http://care.dlservice.microsoft.com/dl/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO"
+  }
+}

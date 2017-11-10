@@ -1,0 +1,30 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Env Variables needed in case of authenticated Artifactory
+# ENV["ATLAS_TOKEN"] = "insert your authentication token here" 
+# ENV["VAGRANT_SERVER_URL"] = "insert your Repository UR here"
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "Windows2016ServerCore"
+  config.vm.box_url = "https://my.artifactory.address/api/vagrant/Vagrant-Repository/Windows2016ServerCore"
+  config.vm.guest = :windows
+  config.vm.communicator = "winrm"
+  config.vm.box_check_update = false
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "Windows2016ServerCore"
+    vb.gui = false
+    vb.memory = "2048"
+    vb.cpus = "2"
+    vb.customize ["modifyvm", :id, "--vram", "32"]
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    
+    echo "------ Provisioning... -------"
+    
+    # Insert your PowerShell provision steps here.
+
+  SHELL
+
+end
